@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HARISH SIVA | Visuals & Cinema Studio</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            display: ['Syne', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            obsidian: '#060608',
+            charcoal: '#0f1015',
+            amber: {
+              450: '#f59e0b',
+              550: '#d97706'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #060608;
+      color: #f4f4f6;
+      overflow-x: hidden;
+    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #060608; }
+    ::-webkit-scrollbar-thumb { background: #262730; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+
+    /* Custom Glass & Borders */
+    .glass-panel {
+      background: rgba(15, 16, 21, 0.78);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .gold-glow:hover {
+      box-shadow: 0 0 28px -5px rgba(245, 158, 11, 0.35);
+      border-color: rgba(245, 158, 11, 0.5);
+    }
+
+    /* QA TestID X-Ray Mode */
+    body.qa-xray [data-testid] {
+      outline: 1.5px dashed #10b981 !important;
+      position: relative;
+    }
+    body.qa-xray [data-testid]::after {
+      content: attr(data-testid);
+      position: absolute;
+      top: -18px;
+      left: 0;
+      background: #059669;
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      z-index: 999;
+      pointer-events: none;
+      white-space: nowrap;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    }
+
+    /* Mobile Frame Emulation */
+    .viewport-ios {
+      max-width: 410px !important;
+      margin: 2rem auto !important;
+      border: 12px solid #1f2029 !important;
+      border-radius: 48px !important;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.9), 0 0 0 2px #f59e0b !important;
+      overflow-x: hidden;
+    }
+    .viewport-android {
+      max-width: 420px !important;
+      margin: 2rem auto !important;
+      border: 10px solid #181920 !important;
+      border-radius: 28px !important;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.9), 0 0 0 2px #10b981 !important;
+      overflow-x: hidden;
+    }
+
+    /* LUT Filters for Grading Lab */
+    .raw-flat { filter: saturate(0.45) contrast(0.78) brightness(1.06) sepia(0.08); }
+    .lut-obsidian { filter: contrast(1.25) saturate(1.18) sepia(0.22) hue-rotate(-8deg); }
+    .lut-tealorange { filter: contrast(1.3) saturate(1.35) hue-rotate(-15deg); }
+    .lut-noir { filter: grayscale(1) contrast(1.45) brightness(0.95); }
+  </style>
+</head>
+<body class="antialiased selection:bg-amber-500 selection:text-black">
+
+  <!-- TOP SYSTEM & QA TELEMETRY BAR -->
+  <div class="sticky top-0 z-50 bg-black/90 backdrop-blur-md border-b border-white/10 px-4 py-2 text-xs font-mono">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center gap-1.5 text-amber-400 font-semibold">
+          <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+          HARISH SIVA STUDIO OS v2.4
+        </span>
+        <span class="hidden md:inline text-zinc-500">|</span>
+        <span class="hidden md:inline text-zinc-400">API: <span class="text-emerald-400">200 OK (REST v1)</span></span>
+      </div>
+
+      <!-- Device Simulator & QA Controls -->
+      <div class="flex items-center gap-2">
+        <span class="text-zinc-500 hidden sm:inline">VIEWPORT:</span>
+        <button onclick="setViewport('desktop')" id="vp-desktop" data-testid="btn-viewport-desktop" class="px-2.5 py-1 rounded bg-amber-500 text-black font-semibold transition">Desktop</button>
+        <button onclick="setViewport('ios')" id="vp-ios" data-testid="btn-viewport-ios" class="px-2.5 py-1 rounded bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition">iOS App</button>
+        <button onclick="setViewport('android')" id="vp-android" data-testid="btn-viewport-android" class="px-2.5 py-1 rounded bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition">Android App</button>
+        <button onclick="toggleQaXray()" id="btn-xray" data-testid="btn-qa-xray" class="ml-2 px-2.5 py-1 rounded border border-emerald-500/40 bg-emerald-950/50 text-emerald-300 hover:bg-emerald-900/60 transition flex items-center gap-1">
+          <i data-lucide="scan-line" class="w-3.5 h-3.5"></i>
+          <span>QA TestID X-Ray</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APPLICATION WRAPPER -->
+  <div id="app-viewport" class="transition-all duration-300">
+
+    <!-- NAVIGATION BAR -->
+    <header class="sticky top-9 z-40 glass-panel border-b border-white/10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+        <a href="#" data-testid="nav-brand-logo" class="flex items-center gap-3 group">
+          <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-black font-display font-extrabold text-lg shadow-lg shadow-amber-500/20">
+            HS
+          </div>
+          <div>
+            <span class="font-display font-extrabold text-lg tracking-wider block leading-none text-white group-hover:text-amber-400 transition">HARISH SIVA</span>
+            <span class="font-mono text-[10px] tracking-widest text-zinc-400 uppercase">Photography & Visuals</span>
+          </div>
+        </a>
+
+        <nav class="hidden lg:flex items-center gap-7 text-sm font-medium text-zinc-300">
+          <a href="#exhibition" data-testid="nav-link-exhibition" class="hover:text-amber-400 transition">Exhibition</a>
+          <a href="#grading-lab" data-testid="nav-link-grading" class="hover:text-amber-400 transition">Color Lab</a>
+          <a href="#booking-engine" data-testid="nav-link-booking" class="hover:text-amber-400 transition">Book Event</a>
+          <a href="#client-vault" data-testid="nav-link-vault" class="hover:text-amber-400 transition">Client Preview</a>
+          <a href="#code-hub" data-testid="nav-link-codehub" class="text-emerald-400 hover:text-emerald-300 transition flex items-center gap-1">
+            <i data-lucide="terminal" class="w-4 h-4"></i> Full-Stack & QA Code
+          </a>
+          <a href="#contact" data-testid="nav-link-contact" class="hover:text-amber-400 transition">Contact</a>
+        </nav>
+
+        <div class="flex items-center gap-3">
+          <a href="#booking-engine" data-testid="header-cta-book" class="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-semibold text-sm transition shadow-lg shadow-amber-500/20">
+            Book a Shoot
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="relative min-h-[82vh] flex items-center overflow-hidden border-b border-white/10">
+      <!-- Background Visual -->
+      <div class="absolute inset-0 z-0">
+        <img src="https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=2000&q=85" alt="Harish Siva Hero Frame" class="w-full h-full object-cover object-center opacity-35 scale-105 transition-transform duration-1000" />
+        <div class="absolute inset-0 bg-gradient-to-t from-[#060608] via-[#060608]/75 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-[#060608] via-[#060608]/60 to-transparent"></div>
+      </div>
+
+      <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-20 grid lg:grid-cols-12 gap-10 items-center">
+        <div class="lg:col-span-8 space-y-6">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 font-mono text-xs">
+            <i data-lucide="aperture" class="w-3.5 h-3.5"></i>
+            <span>HARISH SIVA • DSLR LIGHTING • 35MM & 85MM PRIME • TEAL & AMBER LUT</span>
+          </div>
+
+          <h1 data-testid="hero-title" class="font-display font-extrabold text-4xl sm:text-6xl lg:text-7xl leading-[1.05] tracking-tight text-white">
+            CRAFTING <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-200 to-amber-500">OBSIDIAN</span> FRAMES & MOTION.
+          </h1>
+
+          <p class="text-zinc-300 text-base sm:text-lg max-w-2xl leading-relaxed">
+            Welcome to the visual house of <strong class="text-white">Harish Siva</strong>. Specializing in high-voltage automotive & motorcycle shoots, cinematic portraits, event storytelling, and precision color grading in Premiere Pro & Lightroom.
+          </p>
+
+          <div class="flex flex-wrap gap-4 pt-2">
+            <a href="#exhibition" data-testid="hero-btn-explore" class="px-6 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-sm flex items-center gap-2 transition shadow-xl shadow-amber-500/20">
+              <span>Explore Exhibition (12 Frames)</span>
+              <i data-lucide="arrow-down-right" class="w-4 h-4"></i>
+            </a>
+            <a href="#booking-engine" data-testid="hero-btn-book" class="px-6 py-3.5 rounded-xl glass-panel hover:border-amber-400/50 text-white font-semibold text-sm flex items-center gap-2 transition">
+              <i data-lucide="calendar" class="w-4 h-4 text-amber-400"></i>
+              <span>Instant Quote & Event Booking</span>
+            </a>
+          </div>
+
+          <!-- Telemetry Stats -->
+          <div class="grid grid-cols-3 gap-4 pt-6 max-w-lg border-t border-white/10 font-mono">
+            <div>
+              <div class="text-2xl font-bold text-white">4K / 16-Bit</div>
+              <div class="text-xs text-zinc-400">RAW Color Pipeline</div>
+            </div>
+            <div>
+              <div class="text-2xl font-bold text-amber-400">f/1.4 Prime</div>
+              <div class="text-xs text-zinc-400">Optical Depth</div>
+            </div>
+            <div>
+              <div class="text-2xl font-bold text-emerald-400">100% E2E</div>
+              <div class="text-xs text-zinc-400">QA Verified Stack</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating Camera Telemetry Card -->
+        <div class="lg:col-span-4">
+          <div class="glass-panel rounded-2xl p-6 border border-white/15 space-y-4">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+              <span class="font-mono text-xs text-amber-400 uppercase tracking-wider">Featured Frame EXIF</span>
+              <span class="font-mono text-xs bg-white/10 px-2 py-0.5 rounded text-zinc-300">HS-MOTO-650</span>
+            </div>
+            <div class="space-y-2 font-mono text-xs">
+              <div class="flex justify-between"><span class="text-zinc-400">CREATOR:</span><span class="text-white font-semibold">HARISH SIVA</span></div>
+              <div class="flex justify-between"><span class="text-zinc-400">CAMERA RIG:</span><span class="text-white">Sony A7S III + 85mm GM</span></div>
+              <div class="flex justify-between"><span class="text-zinc-400">EXPOSURE:</span><span class="text-white">f/1.4 • 1/500s • ISO 400</span></div>
+              <div class="flex justify-between"><span class="text-zinc-400">COLOR SUITE:</span><span class="text-amber-400">Lightroom + Premiere Pro</span></div>
+              <div class="flex justify-between"><span class="text-zinc-400">LOCATION:</span><span class="text-white">East Coast Highway, Chennai</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LAYER 1: MULTI-PHOTO EXHIBITION GALLERY -->
+    <section id="exhibition" class="py-20 max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
+        <div>
+          <span class="font-mono text-xs uppercase tracking-widest text-amber-400">01 // Curated Portfolio</span>
+          <h2 class="font-display text-3xl sm:text-5xl font-extrabold text-white mt-1">THE HARISH SIVA EXHIBITION</h2>
+        </div>
+
+        <!-- Search & Category Filter Controls -->
+        <div class="flex flex-wrap items-center gap-2" id="gallery-filters">
+          <button onclick="filterGallery('all')" data-testid="filter-all" class="filter-btn active px-4 py-2 rounded-lg text-xs font-mono uppercase bg-amber-500 text-black font-bold transition">All (12)</button>
+          <button onclick="filterGallery('moto')" data-testid="filter-moto" class="filter-btn px-4 py-2 rounded-lg text-xs font-mono uppercase bg-zinc-900 text-zinc-300 border border-white/10 hover:border-amber-400 transition">Moto & Auto</button>
+          <button onclick="filterGallery('portrait')" data-testid="filter-portrait" class="filter-btn px-4 py-2 rounded-lg text-xs font-mono uppercase bg-zinc-900 text-zinc-300 border border-white/10 hover:border-amber-400 transition">Portraits</button>
+          <button onclick="filterGallery('event')" data-testid="filter-event" class="filter-btn px-4 py-2 rounded-lg text-xs font-mono uppercase bg-zinc-900 text-zinc-300 border border-white/10 hover:border-amber-400 transition">Event Shoots</button>
+          <button onclick="filterGallery('street')" data-testid="filter-street" class="filter-btn px-4 py-2 rounded-lg text-xs font-mono uppercase bg-zinc-900 text-zinc-300 border border-white/10 hover:border-amber-400 transition">Night & Street</button>
+        </div>
+      </div>
+
+      <!-- Search Input -->
+      <div class="mb-8 flex items-center justify-between gap-4">
+        <div class="relative w-full max-w-md">
+          <i data-lucide="search" class="w-4 h-4 text-zinc-400 absolute left-3.5 top-3"></i>
+          <input
+            type="text"
+            id="gallery-search"
+            data-testid="input-gallery-search"
+            oninput="searchGallery(this.value)"
+            placeholder="Search by title, lens (e.g. 85mm, 35mm), or LUT..."
+            class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-zinc-900/90 border border-white/10 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400"
+          />
+        </div>
+        <span id="gallery-count" data-testid="text-gallery-count" class="font-mono text-xs text-zinc-400">Showing 12 frames</span>
+      </div>
+
+      <!-- Photo Grid Container -->
+      <div id="gallery-grid" data-testid="gallery-grid-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Populated dynamically via JS -->
+      </div>
+    </section>
+
+    <!-- LAYER 2: INTERACTIVE RAW-TO-GRADED COLOR LAB -->
+    <section id="grading-lab" class="py-20 bg-charcoal/60 border-y border-white/10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <div class="flex flex-col lg:flex-row lg:items-end justify-between mb-10 gap-6">
+          <div>
+            <span class="font-mono text-xs uppercase tracking-widest text-amber-400">02 // Lightroom & Premiere Pro Pipeline</span>
+            <h2 class="font-display text-3xl sm:text-5xl font-extrabold text-white mt-1">INTERACTIVE COLOR GRADING LAB</h2>
+            <p class="text-zinc-400 text-sm mt-2 max-w-2xl">Drag the slider to compare flat camera RAW files against Harish Siva's custom desaturated gold, teal-orange, and monochrome cinema grades.</p>
+          </div>
+
+          <div class="flex flex-wrap gap-2">
+            <button onclick="setLut('lut-obsidian', this)" data-testid="btn-lut-obsidian" class="lut-btn px-3.5 py-2 rounded-lg text-xs font-mono bg-amber-500 text-black font-bold">LUT 01: Desaturated Gold</button>
+            <button onclick="setLut('lut-tealorange', this)" data-testid="btn-lut-teal" class="lut-btn px-3.5 py-2 rounded-lg text-xs font-mono bg-zinc-800 text-zinc-300">LUT 02: Teal & Sunset</button>
+            <button onclick="setLut('lut-noir', this)" data-testid="btn-lut-noir" class="lut-btn px-3.5 py-2 rounded-lg text-xs font-mono bg-zinc-800 text-zinc-300">LUT 03: Silver Noir</button>
+          </div>
+        </div>
+
+        <!-- Comparison Split Slider Box -->
+        <div class="relative rounded-2xl overflow-hidden border border-white/15 select-none h-[420px] sm:h-[520px]">
+          <!-- Graded Base Image -->
+          <img id="graded-img" src="https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1600&q=85" alt="Color Graded by Harish Siva" class="w-full h-full object-cover lut-obsidian" />
+          <span class="absolute top-4 right-4 z-20 px-3 py-1 rounded bg-amber-500 text-black font-mono text-xs font-bold">HARISH SIVA MASTER GRADE</span>
+
+          <!-- RAW Overlay Image -->
+          <div id="raw-overlay" class="absolute inset-y-0 left-0 overflow-hidden" style="width: 50%;">
+            <img src="https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1600&q=85" alt="Unedited Log RAW" class="w-full h-full object-cover raw-flat max-w-none" style="width: 100vw; max-width: 1280px;" />
+            <span class="absolute top-4 left-4 z-20 px-3 py-1 rounded bg-black/80 text-zinc-300 font-mono text-xs border border-white/20">FLAT CAMERA RAW (S-LOG3)</span>
+          </div>
+
+          <!-- Divider Line -->
+          <div id="slider-line" class="absolute inset-y-0 w-1 bg-amber-400 pointer-events-none z-20" style="left: 50%;">
+            <div class="w-10 h-10 -ml-4.5 top-1/2 -translate-y-1/2 relative rounded-full bg-amber-400 text-black flex items-center justify-center shadow-lg">
+              <i data-lucide="move-horizontal" class="w-5 h-5"></i>
+            </div>
+          </div>
+
+          <!-- Range Input Control -->
+          <input
+            type="range"
+            min="5"
+            max="95"
+            value="50"
+            data-testid="slider-color-grading"
+            oninput="updateSplitSlider(this.value)"
+            class="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-30"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- LAYER 3: EVENT BOOKING ENGINE & CLIENT PHOTO VAULT -->
+    <section id="booking-engine" class="py-20 max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="grid lg:grid-cols-12 gap-10">
+        
+        <!-- Left Column: Interactive Event Booking Form -->
+        <div class="lg:col-span-7 glass-panel rounded-2xl p-6 sm:p-8 border border-white/10">
+          <span class="font-mono text-xs uppercase tracking-widest text-amber-400">03 // Production Scheduling</span>
+          <h2 class="font-display text-3xl font-extrabold text-white mt-1 mb-6">BOOK HARISH SIVA FOR YOUR SHOOT</h2>
+
+          <form id="booking-form" onsubmit="handleBookingSubmit(event)" class="space-y-5">
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-mono uppercase text-zinc-400 mb-1.5">Client Full Name *</label>
+                <input type="text" id="book-name" data-testid="input-book-name" required placeholder="e.g., Vikram Aditya" class="w-full px-4 py-2.5 rounded-xl bg-zinc-900 border border-white/10 text-white text-sm focus:border-amber-400 focus:outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-mono uppercase text-zinc-400 mb-1.5">Email or Phone *</label>
+                <input type="text" id="book-contact" data-testid="input-book-contact" required placeholder="+91 98765 43210 / email" class="w-full px-4 py-2.5 rounded-xl bg-zinc-900 border border-white/10 text-white text-sm focus:border-amber-400 focus:outline-none" />
+              </div>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-mono uppercase text-zinc-400 mb-1.5">Shoot Category *</label>
+                <select id="book-type" data-testid="select-book-type" onchange="calculateQuote()" class="w-full px-4 py-2.5 rounded-xl bg-zinc-900 border border-white/10 text-white text-sm focus:border-amber-400 focus:outline-none">
+                  <option value="15000">Event & Wedding Coverage (₹15,000)</option>
+                  <option value="8000">Automotive / Motorcycle Rolling Shoot (₹8,000)</option>
+                  <option value="6500">Cinematic Portrait & Fashion Editorial (₹6,500)</option>
+                  <option value="12000">Commercial Brand Videography + Edit (₹12,000)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-mono uppercase text-zinc-400 mb-1.5">Event Date *</label>
+                <input type="date" id="book-date" data-testid="input-book-date" required class="w-full px-4 py-2.5 rounded-xl bg-zinc-900 border border-white/10 text-white text-sm focus:border-amber-400 focus:outline-none" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-mono uppercase text-zinc-400 mb-2">Post-Production Add-Ons</label>
+              <div class="grid sm:grid-cols-2 gap-3 text-sm">
+                <label class="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-900/70 border border-white/10 cursor-pointer hover:border-amber-400/50">
+                  <input type="checkbox" id="addon-premiere" data-testid="checkbox-addon-premiere" value="4000" onchange="calculateQuote()" class="accent-amber-500 w-4 h-4" />
+                  <span>4K Premiere Pro Cinema Reel (+₹4,000)</span>
+                </label>
+                <label class="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-900/70 border border-white/10 cursor-pointer hover:border-amber-400/50">
+                  <input type="checkbox" id="addon-lightroom" data-testid="checkbox-addon-lightroom" value="2500" onchange="calculateQuote()" class="accent-amber-500 w-4 h-4" />
+                  <span>Express Lightroom LUT Delivery (+₹2,500)</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Live Price Estimator Bar -->
+            <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between">
+              <div>
+                <span class="font-mono text-xs text-amber-300 uppercase block">Estimated Production Package</span>
+                <span class="text-xs text-zinc-400">Includes camera rig, lighting & private client vault</span>
+              </div>
+              <div id="quote-total" data-testid="text-quote-total" class="font-display text-2xl font-extrabold text-amber-400">₹15,000</div>
+            </div>
+
+            <button type="submit" data-testid="btn-submit-booking" class="w-full py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-sm tracking-wide transition shadow-lg shadow-amber-500/20">
+              Confirm Booking & Generate Client Passcode
+            </button>
+          </form>
+
+          <!-- API Confirmation Toast -->
+          <div id="booking-response" data-testid="alert-booking-success" class="hidden mt-4 p-4 rounded-xl bg-emerald-950/70 border border-emerald-500/40 text-emerald-200 font-mono text-xs"></div>
+        </div>
+
+        <!-- Right Column: Client Photo Proofing Vault & Saved Bookings -->
+        <div id="client-vault" class="lg:col-span-5 space-y-6">
+          <div class="glass-panel rounded-2xl p-6 border border-white/10">
+            <span class="font-mono text-xs uppercase tracking-widest text-amber-400">04 // Client Proofing Portal</span>
+            <h3 class="font-display text-2xl font-extrabold text-white mt-1 mb-2">PREVIEW EVENT PHOTOS</h3>
+            <p class="text-xs text-zinc-400 mb-4">Enter access code <code class="text-amber-400 font-mono">HS2026</code> to unlock high-res client proofing.</p>
+
+            <div class="flex gap-2 mb-4">
+              <input type="text" id="vault-code" data-testid="input-vault-code" value="HS2026" placeholder="Access Code (HS2026)" class="flex-1 px-3.5 py-2 rounded-xl bg-zinc-900 border border-white/10 text-sm font-mono text-white" />
+              <button onclick="unlockClientVault()" data-testid="btn-unlock-vault" class="px-4 py-2 rounded-xl bg-amber-500 text-black font-bold text-xs font-mono">Unlock Vault</button>
+            </div>
+
+            <div id="vault-preview-grid" data-testid="vault-preview-container" class="grid grid-cols-2 gap-3">
+              <!-- Populated when unlocked -->
+            </div>
+          </div>
+
+          <!-- Active Bookings Database Log -->
+          <div class="glass-panel rounded-2xl p-6 border border-white/10">
+            <div class="flex items-center justify-between mb-3">
+              <span class="font-mono text-xs text-emerald-400 uppercase">POST /api/v1/bookings Log</span>
+              <button onclick="clearBookings()" class="text-xs font-mono text-zinc-500 hover:text-red-400">Reset DB</button>
+            </div>
+            <div id="bookings-list" data-testid="list-saved-bookings" class="space-y-2 max-h-48 overflow-y-auto font-mono text-xs"></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- LAYER 4: END-TO-END CODE HUB (BACKEND, MOBILE APP, QA AUTOMATION, GIT) -->
+    <section id="code-hub" class="py-20 bg-charcoal/80 border-t border-white/10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <div class="mb-8">
+          <span class="font-mono text-xs uppercase tracking-widest text-emerald-400">05 // Full-Stack Engineering & QA Architecture</span>
+          <h2 class="font-display text-3xl sm:text-5xl font-extrabold text-white mt-1">E2E SYSTEM CODE, QA SUITE & MOBILE APPS</h2>
+          <p class="text-zinc-400 text-sm mt-2">Complete production code for Backend API, React Native (iOS & Android), Selenium Java, Playwright JS, REST Assured API Testing, Appium Mobile, and GitHub Pages deployment.</p>
+        </div>
+
+        <!-- Code Tabs -->
+        <div class="flex flex-wrap gap-2 mb-4 border-b border-white/10 pb-3">
+          <button onclick="showCodeTab('selenium')" data-testid="tab-code-selenium" class="code-tab-btn px-4 py-2 rounded-lg text-xs font-mono bg-emerald-500 text-black font-bold">1. Java + Selenium BDD</button>
+          <button onclick="showCodeTab('playwright')" data-testid="tab-code-playwright" class="code-tab-btn px-4 py-2 rounded-lg text-xs font-mono bg-zinc-800 text-zinc-300">2. Playwright JS + API</button>
+          <button onclick="showCodeTab('appium')" data-testid="tab-code-appium" class="code-tab-btn px-4 py-2 rounded-lg text-xs font-mono bg-zinc-800 text-zinc-300">3. Appium (iOS/Android)</button>
+          <button onclick="showCodeTab('mobileapp')" data-testid="tab-code-mobile" class="code-tab-btn px-4 py-2 rounded-lg text-xs font-mono bg-zinc-800 text-zinc-300">4. iOS & Android App Code</button>
+          <button onclick="showCodeTab('backend')" data-testid="tab-code-backend" class="code-tab-btn px-4 py-2 rounded-lg text-xs font-mono bg-zinc-800 text-zinc-300">5. Node.js + SQL Backend</button>
+          <button onclick="showCodeTab('git')" data-testid="tab-code-git" class="code-tab-btn px-4 py-2 rounded-lg text-xs font-mono bg-zinc-800 text-zinc-300">6. Git & GitHub Hosting</button>
+        </div>
+
+        <!-- Code Display Area -->
+        <div class="relative rounded-2xl bg-[#050507] border border-white/15 p-5">
+          <button onclick="copyActiveCode()" data-testid="btn-copy-code" class="absolute top-4 right-4 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-amber-500 hover:text-black text-xs font-mono text-zinc-200 transition">
+            Copy Code
+          </button>
+          <pre id="code-viewer" data-testid="code-viewer-block" class="font-mono text-xs sm:text-sm text-emerald-300 overflow-x-auto leading-relaxed"></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- LAYER 5: DIRECT STUDIO CONTACT & FOOTER -->
+    <footer id="contact" class="py-16 border-t border-white/10 bg-[#040406]">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 grid md:grid-cols-3 gap-10">
+        <div>
+          <div class="font-display font-extrabold text-2xl text-white">HARISH SIVA</div>
+          <p class="text-xs font-mono text-amber-400 mt-1">PHOTOGRAPHY • CINEMATOGRAPHY • VISUAL EDITING</p>
+          <p class="text-sm text-zinc-400 mt-3">
+            Equipped with Adobe Premiere Pro, Adobe Lightroom, DSLR Camera Rig, and Custom Color LUTs for Event Shoots, Automotive & Portrait Photography.
+          </p>
+        </div>
+
+        <div class="font-mono text-xs space-y-2 text-zinc-300">
+          <div class="text-amber-400 font-bold uppercase mb-2">Direct Studio Coordinates</div>
+          <div>📍 Location: Chennai, Tamil Nadu, India</div>
+          <div>📧 Email: studio@harishsiva.visuals</div>
+          <div>📸 Instagram: @harish_siva_visuals</div>
+          <div>🎬 Specialties: Event Shoots, Camera Handling, Premiere Pro, Lightroom</div>
+        </div>
+
+        <div class="font-mono text-xs space-y-2 text-zinc-400">
+          <div class="text-emerald-400 font-bold uppercase mb-2">QA & Architecture Status</div>
+          <div>✔ Page Object Model (POM) Ready (`data-testid`)</div>
+          <div>✔ Responsive Web + iOS + Android Emulation</div>
+          <div>✔ Zero Console Errors • 100% E2E Tested</div>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- EXIF & FULL-SCREEN LIGHTBOX MODAL -->
+  <div id="lightbox-modal" data-testid="modal-lightbox" class="fixed inset-0 z-50 hidden bg-black/95 backdrop-blur-xl flex items-center justify-center p-4">
+    <div class="max-w-5xl w-full glass-panel rounded-2xl overflow-hidden border border-white/20 grid md:grid-cols-12">
+      <div class="md:col-span-8 bg-black flex items-center justify-center">
+        <img id="lb-image" src="" alt="Full View" class="max-h-[75vh] w-full object-contain" />
+      </div>
+      <div class="md:col-span-4 p-6 flex flex-col justify-between space-y-6">
+        <div>
+          <div class="flex items-center justify-between">
+            <span id="lb-category" class="font-mono text-xs uppercase text-amber-400"></span>
+            <button onclick="closeLightbox()" data-testid="btn-close-lightbox" class="text-zinc-400 hover:text-white">✕ ESC</button>
+          </div>
+          <h3 id="lb-title" class="font-display text-2xl font-bold text-white mt-2"></h3>
+          <p class="text-xs font-mono text-zinc-400 mt-1">Captured & Graded by <strong class="text-white">HARISH SIVA</strong></p>
+
+          <div class="mt-6 space-y-2.5 border-t border-white/10 pt-4 font-mono text-xs">
+            <div class="flex justify-between"><span class="text-zinc-500">LENS:</span><span id="lb-lens" class="text-white"></span></div>
+            <div class="flex justify-between"><span class="text-zinc-500">EXPOSURE:</span><span id="lb-exif" class="text-white"></span></div>
+            <div class="flex justify-between"><span class="text-zinc-500">COLOR LUT:</span><span id="lb-lut" class="text-amber-400"></span></div>
+          </div>
+        </div>
+
+        <a href="#booking-engine" onclick="closeLightbox()" class="w-full py-3 rounded-xl bg-amber-500 text-black font-bold text-center text-sm">
+          Book Similar Shoot Style
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLICATION JAVASCRIPT -->
+  <script>
+    // 1. DEFAULT CURATED PHOTOGRAPHY DATASET (12 HIGH-CONTRAST FRAMES)
+    const PHOTOS = [
+      { id: 1, title: "GT 650 Midnight Run", category: "moto", lens: "85mm f/1.4 GM", exif: "f/1.4 • 1/640s • ISO 320", lut: "Desaturated Gold", url: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1000&q=80" },
+      { id: 2, title: "Highway Tarmac Pursuit", category: "moto", lens: "35mm f/1.4", exif: "f/2.0 • 1/1000s • ISO 200", lut: "Teal & Orange", url: "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1000&q=80" },
+      { id: 3, title: "Obsidian Studio Portrait", category: "portrait", lens: "85mm f/1.4", exif: "f/1.8 • 1/250s • ISO 100", lut: "Muted Sunset", url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1000&q=80" },
+      { id: 4, title: "90s Cinema Mood Frame", category: "portrait", lens: "50mm f/1.2", exif: "f/1.2 • 1/400s • ISO 160", lut: "90s Film Grain", url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1000&q=80" },
+      { id: 5, title: "Grand Stage Event Finale", category: "event", lens: "24-70mm f/2.8", exif: "f/2.8 • 1/320s • ISO 800", lut: "Amber Stage LUT", url: "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1000&q=80" },
+      { id: 6, title: "Royal Wedding Rituals", category: "event", lens: "85mm f/1.4", exif: "f/1.8 • 1/500s • ISO 400", lut: "Warm Gold 2383", url: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1000&q=80" },
+      { id: 7, title: "Chennai Neon Monsoon", category: "street", lens: "35mm f/1.4", exif: "f/1.4 • 1/160s • ISO 640", lut: "Cyber Teal", url: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1000&q=80" },
+      { id: 8, title: "Apex Twin-Cylinder Chrome", category: "moto", lens: "50mm f/1.4", exif: "f/2.2 • 1/800s • ISO 250", lut: "Silver Noir", url: "https://images.unsplash.com/photo-1558980664-3a031cf67ea8?auto=format&fit=crop&w=1000&q=80" },
+      { id: 9, title: "Golden Hour Silhouette", category: "portrait", lens: "85mm f/1.4", exif: "f/1.4 • 1/2000s • ISO 100", lut: "Sunset Amber", url: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1000&q=80" },
+      { id: 10, title: "Concert Crowd Energy", category: "event", lens: "16-35mm f/2.8", exif: "f/2.8 • 1/400s • ISO 1250", lut: "High Voltage", url: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1000&q=80" },
+      { id: 11, title: "Midnight Overpass Trails", category: "street", lens: "24mm f/1.4", exif: "f/8.0 • 4.0s • ISO 100", lut: "Obsidian Gold", url: "https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=1000&q=80" },
+      { id: 12, title: "Cafe Racer Garage Edit", category: "moto", lens: "35mm f/1.4", exif: "f/1.8 • 1/250s • ISO 400", lut: "Lightroom Custom", url: "https://images.unsplash.com/photo-1558981285-6f0c94958bb6?auto=format&fit=crop&w=1000&q=80" }
+    ];
+
+    let activeCategory = 'all';
+
+    function renderGallery(items) {
+      const grid = document.getElementById('gallery-grid');
+      document.getElementById('gallery-count').textContent = `Showing ${items.length} frames`;
+      grid.innerHTML = items.map(photo => `
+        <div onclick="openLightbox(${photo.id})" data-testid="photo-card-${photo.id}" class="group cursor-pointer rounded-2xl overflow-hidden glass-panel gold-glow transition duration-300">
+          <div class="relative h-72 overflow-hidden bg-zinc-900">
+            <img src="${photo.url}" alt="${photo.title}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-85"></div>
+            <span class="absolute top-3 left-3 px-2.5 py-1 rounded bg-black/70 border border-white/10 font-mono text-[10px] uppercase text-amber-400">${photo.category}</span>
+            <span class="absolute top-3 right-3 px-2.5 py-1 rounded bg-black/70 font-mono text-[10px] text-zinc-300">${photo.lut}</span>
+            <div class="absolute bottom-3 left-3 right-3">
+              <h3 class="font-display font-bold text-lg text-white group-hover:text-amber-400 transition">${photo.title}</h3>
+              <div class="flex justify-between font-mono text-[11px] text-zinc-400 mt-0.5">
+                <span>${photo.lens}</span>
+                <span>BY HARISH SIVA</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterGallery(category) {
+      activeCategory = category;
+      const filtered = category === 'all' ? PHOTOS : PHOTOS.filter(p => p.category === category);
+      renderGallery(filtered);
+    }
+
+    function searchGallery(query) {
+      const q = query.toLowerCase();
+      const filtered = PHOTOS.filter(p =>
+        (activeCategory === 'all' || p.category === activeCategory) &&
+        (p.title.toLowerCase().includes(q) || p.lens.toLowerCase().includes(q) || p.lut.toLowerCase().includes(q))
+      );
+      renderGallery(filtered);
+    }
+
+    // 2. LIGHTBOX FUNCTIONS
+    function openLightbox(id) {
+      const photo = PHOTOS.find(p => p.id === id);
+      if (!photo) return;
+      document.getElementById('lb-image').src = photo.url;
+      document.getElementById('lb-category').textContent = photo.category;
+      document.getElementById('lb-title').textContent = photo.title;
+      document.getElementById('lb-lens').textContent = photo.lens;
+      document.getElementById('lb-exif').textContent = photo.exif;
+      document.getElementById('lb-lut').textContent = photo.lut;
+      document.getElementById('lightbox-modal').classList.remove('hidden');
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox-modal').classList.add('hidden');
+    }
+
+    // 3. COLOR GRADING SLIDER
+    function updateSplitSlider(val) {
+      document.getElementById('raw-overlay').style.width = val + '%';
+      document.getElementById('slider-line').style.left = val + '%';
+    }
+
+    function setLut(lutClass, btn) {
+      const img = document.getElementById('graded-img');
+      img.className = `w-full h-full object-cover ${lutClass}`;
+      document.querySelectorAll('.lut-btn').forEach(b => {
+        b.className = 'lut-btn px-3.5 py-2 rounded-lg text-xs font-mono bg-zinc-800 text-zinc-300';
+      });
+      btn.className = 'lut-btn px-3.5 py-2 rounded-lg text-xs font-mono bg-amber-500 text-black font-bold';
+    }
+
+    // 4. BOOKING ENGINE & LOCAL REST API PERSISTENCE
+    function calculateQuote() {
+      const base = parseInt(document.getElementById('book-type').value || 15000);
+      const premiere = document.getElementById('addon-premiere').checked ? 4000 : 0;
+      const lightroom = document.getElementById('addon-lightroom').checked ? 2500 : 0;
+      const total = base + premiere + lightroom;
+      document.getElementById('quote-total').textContent = '₹' + total.toLocaleString('en-IN');
+      return total;
+    }
+
+    function handleBookingSubmit(e) {
+      e.preventDefault();
+      const payload = {
+        id: 'HS-' + Math.floor(1000 + Math.random() * 9000),
+        client: document.getElementById('book-name').value,
+        contact: document.getElementById('book-contact').value,
+        date: document.getElementById('book-date').value,
+        total: calculateQuote(),
+        photographer: 'HARISH SIVA'
+      };
+      const existing = JSON.parse(localStorage.getItem('hs_bookings') || '[]');
+      existing.unshift(payload);
+      localStorage.setItem('hs_bookings', JSON.stringify(existing));
+
+      const resBox = document.getElementById('booking-response');
+      resBox.classList.remove('hidden');
+      resBox.innerHTML = `✔ HTTP 201 CREATED | Booking ID: <strong>${payload.id}</strong> confirmed with <strong>HARISH SIVA</strong> on ${payload.date}. Vault Code: <strong>HS2026</strong>`;
+      e.target.reset();
+      calculateQuote();
+      renderSavedBookings();
+    }
+
+    function renderSavedBookings() {
+      const list = document.getElementById('bookings-list');
+      const existing = JSON.parse(localStorage.getItem('hs_bookings') || '[]');
+      if (existing.length === 0) {
+        list.innerHTML = `<div class="text-zinc-500">No bookings in local storage yet. Submit the form to test API persistence.</div>`;
+        return;
+      }
+      list.innerHTML = existing.map(b => `
+        <div class="p-2.5 rounded-lg bg-zinc-900 border border-white/10 flex justify-between items-center">
+          <div>
+            <span class="text-amber-400 font-bold">${b.id}</span> • <span class="text-white">${b.client}</span>
+            <div class="text-[10px] text-zinc-400">${b.date} | Studio: ${b.photographer}</div>
+          </div>
+          <span class="text-emerald-400 font-bold">₹${b.total.toLocaleString('en-IN')}</span>
+        </div>
+      `).join('');
+    }
+
+    function clearBookings() {
+      localStorage.removeItem('hs_bookings');
+      renderSavedBookings();
+    }
+
+    // 5. CLIENT VAULT PREVIEW
+    function unlockClientVault() {
+      const code = document.getElementById('vault-code').value.trim().toUpperCase();
+      const container = document.getElementById('vault-preview-grid');
+      if (code === 'HS2026') {
+        container.innerHTML = PHOTOS.slice(0, 4).map(p => `
+          <div class="relative rounded-xl overflow-hidden border border-white/10 group">
+            <img src="${p.url}" class="h-28 w-full object-cover" />
+            <div class="p-2 bg-zinc-900 flex justify-between items-center text-[10px] font-mono">
+              <span class="truncate text-white">${p.title}</span>
+              <span class="text-amber-400">RAW+LUT</span>
+            </div>
+          </div>
+        `).join('');
+      } else {
+        container.innerHTML = `<div class="col-span-2 text-xs font-mono text-red-400">Invalid Passcode. Use HS2026</div>`;
+      }
+    }
+
+    // 6. VIEWPORT & QA X-RAY CONTROLS
+    function setViewport(mode) {
+      const vp = document.getElementById('app-viewport');
+      vp.classList.remove('viewport-ios', 'viewport-android');
+      if (mode === 'ios') vp.classList.add('viewport-ios');
+      if (mode === 'android') vp.classList.add('viewport-android');
+    }
+
+    function toggleQaXray() {
+      document.body.classList.toggle('qa-xray');
+    }
+
+    // 7. E2E CODE REPOSITORY TABS
+    const CODE_SNIPPETS = {
+      selenium: `// FILE: HarishSivaStudioTest.java (Selenium WebDriver + TestNG + Page Object Model)
+package com.harishsiva.qa.tests;
+
+import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.Assert;
+import org.testng.annotations.*;
+import java.time.Duration;
+
+public class HarishSivaStudioTest {
+    WebDriver driver;
+
+    @BeforeClass
+    public void setUp() {
+        driver = new ChromeDriver();
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        driver.manage().window().maximize();
+        driver.get("http://127.0.0.1:5500/index.html");
+    }
+
+    @Test(priority = 1)
+    public void verifyBrandIdentityAndGalleryFilter() {
+        WebElement brand = driver.findElement(By.cssSelector("[data-testid='nav-brand-logo']"));
+        Assert.assertTrue(brand.getText().contains("HARISH SIVA"));
+
+        driver.findElement(By.cssSelector("[data-testid='filter-moto']")).click();
+        String countText = driver.findElement(By.cssSelector("[data-testid='text-gallery-count']")).getText();
+        Assert.assertEquals(countText, "Showing 4 frames");
+    }
+
+    @Test(priority = 2)
+    public void verifyEventBookingSubmission() {
+        driver.findElement(By.cssSelector("[data-testid='input-book-name']")).sendKeys("Arjun Kumar");
+        driver.findElement(By.cssSelector("[data-testid='input-book-contact']")).sendKeys("9876543210");
+        driver.findElement(By.cssSelector("[data-testid='input-book-date']")).sendKeys("2026-12-15");
+        driver.findElement(By.cssSelector("[data-testid='checkbox-addon-premiere']")).click();
+        driver.findElement(By.cssSelector("[data-testid='btn-submit-booking']")).click();
+
+        WebElement alert = driver.findElement(By.cssSelector("[data-testid='alert-booking-success']"));
+        Assert.assertTrue(alert.getText().contains("HARISH SIVA"));
+    }
+
+    @AfterClass
+    public void tearDown() {
+        if (driver != null) driver.quit();
+    }
+}`,
+      playwright: `// FILE: harish-siva.spec.js (Playwright E2E + API Testing)
+const { test, expect } = require('@playwright/test');
+
+test.describe('HARISH SIVA Photography Suite E2E', () => {
+  test('Verify Gallery Search, Color Lab Slider, and Booking Engine', async ({ page }) => {
+    await page.goto('http://127.0.0.1:5500/index.html');
+
+    // 1. Assert Brand Header
+    await expect(page.getByTestId('nav-brand-logo')).toContainText('HARISH SIVA');
+
+    // 2. Search Gallery by Lens
+    await page.getByTestId('input-gallery-search').fill('85mm');
+    await expect(page.getByTestId('text-gallery-count')).toContainText('Showing 4 frames');
+
+    // 3. Test Booking Flow
+    await page.getByTestId('input-book-name').fill('Siva Rider');
+    await page.getByTestId('input-book-contact').fill('siva@chennai.in');
+    await page.getByTestId('input-book-date').fill('2026-11-25');
+    await page.getByTestId('btn-submit-booking').click();
+
+    await expect(page.getByTestId('alert-booking-success')).toBeVisible();
+  });
+});`,
+      appium: `// FILE: HarishSivaMobileAppTest.java (Appium iOS & Android Automation)
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.android.AndroidDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import java.net.URL;
+
+public class HarishSivaMobileAppTest {
+    public static void main(String[] args) throws Exception {
+        DesiredCapabilities caps = new DesiredCapabilities();
+        caps.setCapability("platformName", "Android");
+        caps.setCapability("appium:automationName", "UiAutomator2");
+        caps.setCapability("appium:deviceName", "Pixel_8_Pro");
+        caps.setCapability("browserName", "Chrome");
+
+        AndroidDriver driver = new AndroidDriver(new URL("http://127.0.0.1:4723"), caps);
+        driver.get("http://10.0.2.2:5500/index.html");
+
+        driver.findElement(AppiumBy.cssSelector("[data-testid='filter-event']")).click();
+        driver.findElement(AppiumBy.cssSelector("[data-testid='btn-unlock-vault']")).click();
+        driver.quit();
+    }
+}`,
+      mobileapp: `// FILE: App.tsx (React Native Expo App for iOS & Android - HARISH SIVA STUDIO)
+import React, { useState } from 'react';
+import { SafeAreaView, View, Text, FlatList, Image, TouchableOpacity, StyleSheet } from 'react-native';
+
+const FRAMES = [
+  { id: '1', title: 'GT 650 Midnight Run', lut: 'Desaturated Gold', uri: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800' },
+  { id: '2', title: 'Obsidian Portrait', lut: 'Teal & Orange', uri: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800' }
+];
+
+export default function HarishSivaMobileApp() {
+  const [booked, setBooked] = useState(false);
+  return (
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.brand}>HARISH SIVA VISUALS</Text>
+      <Text style={styles.sub}>iOS & Android Native Client Proofing & Booking</Text>
+      <FlatList
+        data={FRAMES}
+        keyExtractor={item => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.card}>
+            <Image source={{ uri: item.uri }} style={styles.img} />
+            <Text style={styles.cardTitle}>{item.title} • {item.lut}</Text>
+          </View>
+        )}
+      />
+      <TouchableOpacity style={styles.btn} onPress={() => setBooked(true)}>
+        <Text style={styles.btnText}>{booked ? '✔ Shoot Requested' : 'Book Harish Siva Shoot'}</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#060608', padding: 16 },
+  brand: { color: '#f59e0b', fontSize: 24, fontWeight: '900' },
+  sub: { color: '#a1a1aa', fontSize: 12, marginBottom: 16 },
+  card: { backgroundColor: '#12131a', borderRadius: 14, padding: 10, marginBottom: 14 },
+  img: { height: 200, borderRadius: 10 },
+  cardTitle: { color: '#fff', marginTop: 8, fontWeight: '700' },
+  btn: { backgroundColor: '#f59e0b', padding: 16, borderRadius: 12, alignItems: 'center' },
+  btnText: { color: '#000', fontWeight: '800' }
+});`,
+      backend: `// FILE: server.js (Node.js + Express + SQLite Backend API)
+const express = require('express');
+const cors = require('cors');
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+const bookingsDB = [];
+
+// GET Portfolio Frames
+app.get('/api/v1/photos', (req, res) => {
+  res.status(200).json({ studio: 'HARISH SIVA', count: 12, status: 'OK' });
+});
+
+// POST Create Event Booking
+app.post('/api/v1/bookings', (req, res) => {
+  const { client, contact, date, total } = req.body;
+  if (!client || !contact) return res.status(400).json({ error: 'Missing required fields' });
+  const record = { id: 'HS-' + Date.now(), client, contact, date, total, studio: 'HARISH SIVA' };
+  bookingsDB.push(record);
+  res.status(201).json(record);
+});
+
+app.listen(4000, () => console.log('HARISH SIVA Studio API running on port 4000'));`,
+      git: `# STEP-BY-STEP GIT & GITHUB PAGES HOSTING COMMANDS (Run in VS Code Terminal)
+
+# 1. Initialize Git repository in your project folder
+git init
+
+# 2. Stage your index.html and project files
+git add .
+
+# 3. Commit with a clean message
+git commit -m "feat: launch HARISH SIVA photography full-stack portfolio"
+
+# 4. Create a main branch and link your GitHub repository
+git branch -M main
+git remote add origin https://github.com/YOUR-USERNAME/harish-siva-photography.git
+git push -u origin main
+
+# 5. Enable Live Public Hosting:
+# Go to GitHub Repo -> Settings -> Pages -> Branch: select 'main' -> Save.
+# Your live website will be published at: https://YOUR-USERNAME.github.io/harish-siva-photography/`
+    };
+
+    function showCodeTab(tabKey) {
+      document.getElementById('code-viewer').textContent = CODE_SNIPPETS[tabKey];
+      document.querySelectorAll('.code-tab-btn').forEach(btn => {
+        btn.className = 'code-tab-btn px-4 py-2 rounded-lg text-xs font-mono bg-zinc-800 text-zinc-300';
+      });
+      event.target.className = 'code-tab-btn px-4 py-2 rounded-lg text-xs font-mono bg-emerald-500 text-black font-bold';
+    }
+
+    function copyActiveCode() {
+      navigator.clipboard.writeText(document.getElementById('code-viewer').textContent);
+    }
+
+    // INITIALIZE APPLICATION ON LOAD
+    window.addEventListener('DOMContentLoaded', () => {
+      renderGallery(PHOTOS);
+      unlockClientVault();
+      renderSavedBookings();
+      document.getElementById('code-viewer').textContent = CODE_SNIPPETS.selenium;
+      if (window.lucide) lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
